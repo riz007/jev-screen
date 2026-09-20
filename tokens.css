@@ -1,0 +1,58 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Split Studio
+ * theme: studied-DNA (source: https://typesafe.ai)
+ * observed: paper rgb(254,254,254) · ink rgb(0,0,0) · accent rgb(243,134,161)
+ *           body 12px dominant · grotesk display · JetBrains Mono · radius 0
+ * substitution: Die Grotesk C is commercial -> Archivo
+ * nav: N9 edge-aligned · footer: Ft2 inline · enrichment: none
+ */
+
+:root {
+  --color-paper: oklch(99.4% 0 0);
+  --color-paper-2: oklch(97.2% 0 0);
+  --color-paper-3: oklch(94% 0 0);
+  --color-panel: oklch(23% 0 0);
+  --color-ink: oklch(0% 0 0);
+  --color-ink-2: oklch(38% 0 0);
+  --color-ink-3: oklch(58% 0 0);
+  --color-accent: oklch(74.5% 0.115 5);
+  --color-accent-ink: oklch(50% 0.175 8);
+  --color-accent-wash: oklch(95.5% 0.028 5);
+  --color-rule: oklch(0% 0 0 / 0.12);
+  --color-rule-strong: oklch(0% 0 0 / 0.55);
+  --color-focus: oklch(50% 0.175 8);
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, Menlo, monospace;
+
+  --text-display: clamp(1.75rem, 3.2vw, 2.5rem);
+  --text-h2: 1.0625rem;
+  --text-lead: 0.9375rem;
+  --text-body: 0.875rem;
+  --text-ui: 0.75rem;
+  --text-micro: 0.6875rem;
+
+  --leading-display: 1.02;
+  --leading-body: 1.55;
+
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.25rem;
+  --space-2xl: 3.5rem;
+  --space-3xl: 5rem;
+
+  --rule-hair: 1px;
+  --rule-thick: 2px;
+  --radius-none: 0;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 110ms;
+  --dur-base: 180ms;
+
+  --measure: 58ch;
+}
