@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+const read = (path: string) =>
+  readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 describe("key handling", () => {
   const page = read("src/app/page.tsx");
@@ -41,7 +42,13 @@ describe("data minimisation", () => {
 
   it("scrubs in the browser, so the server never receives the original", () => {
     expect(page).toContain('import { redact } from "@/lib/redact"');
-    expect(page).toContain("redact(text)");
+    // Assert the request body itself is scrubbed, not a particular variable name.
+    expect(page).toMatch(/body:\s*JSON\.stringify\(\{\s*resume:\s*redact\(/);
+  });
+
+  it("reads the PDF in the browser, so the file never reaches the server", () => {
+    expect(page).toContain('await import("@/lib/pdf")');
+    expect(page).toMatch(/setResume\(await pdfToMarkdown\(/);
   });
 
   it("scrubs again on the server, since redaction is idempotent", () => {
@@ -50,7 +57,9 @@ describe("data minimisation", () => {
 
   it("writes nothing to any store", () => {
     for (const source of [page, route]) {
-      expect(source).not.toMatch(/prisma|mongoose|createClient|fs\.writeFile|redis/i);
+      expect(source).not.toMatch(
+        /prisma|mongoose|createClient|fs\.writeFile|redis/i,
+      );
     }
   });
 
@@ -67,11 +76,16 @@ describe("deployment safety", () => {
 
   it("does not spend the deployer's key on a stranger's request by default", () => {
     expect(route).toContain('process.env.ALLOW_SERVER_KEY === "1"');
-    expect(route).toMatch(/serverKeyAllowed \? process\.env\.TYPESAFE_API_KEY : undefined/);
+    expect(route).toMatch(
+      /serverKeyAllowed \? process\.env\.TYPESAFE_API_KEY : undefined/,
+    );
   });
 
   it("keeps .env out of version control", () => {
-    const ignored = readFileSync(new URL("../.gitignore", import.meta.url), "utf8");
+    const ignored = readFileSync(
+      new URL("../.gitignore", import.meta.url),
+      "utf8",
+    );
     expect(ignored).toMatch(/^\.env$/m);
     expect(ignored).toMatch(/^\.env\.local$/m);
   });

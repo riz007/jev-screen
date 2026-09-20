@@ -1,9 +1,15 @@
+import { verdictFor, type Verdict } from "./bands";
 import { INSUFFICIENT_SIGNAL, type Rubric } from "./rubric";
 
-export const CONFIDENCE_FLOOR = 0.8;
-export const UNCLEAR_BAND = { low: 0.35, high: 0.65 } as const;
+export {
+  BANDS,
+  VERDICT_LABEL,
+  VERDICT_MEANING,
+  verdictFor,
+  type Verdict,
+} from "./bands";
 
-export type Verdict = "yes" | "no" | "unclear";
+export const CONFIDENCE_FLOOR = 0.8;
 
 export type RequirementEvidence = {
   kind: "requirement";
@@ -34,6 +40,7 @@ export type RoutingEvidence = {
   selected: string;
   confidence: number;
   probabilities: Record<string, number>;
+  ranked: Array<{ option: string; probability: number }>;
   insufficientSignal: boolean;
 };
 
@@ -52,12 +59,6 @@ export type EvidenceCard = {
   needsHumanRead: boolean;
   reasons: string[];
 };
-
-export function verdictFor(probability: number): Verdict {
-  if (probability < UNCLEAR_BAND.low) return "no";
-  if (probability > UNCLEAR_BAND.high) return "yes";
-  return "unclear";
-}
 
 type RawAnswers = Record<string, Record<string, unknown>>;
 
@@ -83,9 +84,9 @@ export function buildCard(
         const probability = Number(answer.noul);
         const verdict = verdictFor(probability);
 
-        if (verdict === "unclear") {
+        if (verdict === "thin") {
           reasons.push(
-            `"${item.key}" is unclear (p=${probability.toFixed(2)})`,
+            `${item.label ?? item.key}: only a hint, worth a human read`,
           );
         }
 
@@ -138,6 +139,11 @@ export function buildCard(
           );
         }
 
+        const probabilities = (answer.probabilities ?? {}) as Record<
+          string,
+          number
+        >;
+
         items.push({
           kind: "routing",
           key: item.key,
@@ -145,7 +151,10 @@ export function buildCard(
           label: item.label ?? item.question,
           selected,
           confidence,
-          probabilities: (answer.probabilities ?? {}) as Record<string, number>,
+          probabilities,
+          ranked: Object.entries(probabilities)
+            .map(([option, probability]) => ({ option, probability }))
+            .sort((a, b) => b.probability - a.probability),
           insufficientSignal,
         });
         break;
